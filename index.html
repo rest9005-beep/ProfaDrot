@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Космическая Станция | SpaceWeb</title>
+    <meta name="description" content="Социальная космическая платформа для общения и игр">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
+</head>
+<body>
+    <!-- Star Background -->
+    <canvas id="starCanvas"></canvas>
+    <div class="nebula" id="nebula"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text glitch" data-text="ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ">ИНИЦИАЛИЗАЦИЯ СИСТЕМЫ</div>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        <header class="header" role="banner">
+            <div class="logo">
+                <div class="logo-icon" aria-hidden="true">🚀</div>
+                <div class="logo-text">КОСМИЧЕСКАЯ<span class="logo-accent">СТАНЦИЯ</span></div>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button class="menu-toggle" id="menuToggle" aria-label="Меню">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- Navigation -->
+            <nav class="nav-menu" role="navigation" aria-label="Основная навигация">
+                <div class="nav-item active" data-page="dashboard" role="button" tabindex="0">
+                    <i class="fas fa-home" aria-hidden="true"></i>
+                    <span>Главная</span>
+                </div>
+                <div class="nav-item" data-page="chat" role="button" tabindex="0">
+                    <i class="fas fa-comments" aria-hidden="true"></i>
+                    <span>Чат</span>
+                </div>
+                <div class="nav-item" data-page="friends" role="button" tabindex="0">
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <span>Друзья</span>
+                </div>
+                <div class="nav-item" data-page="profile" role="button" tabindex="0">
+                    <i class="fas fa-user-astronaut" aria-hidden="true"></i>
+                    <span>Профиль</span>
+                </div>
+                <div class="nav-item" data-page="games" role="button" tabindex="0">
+                    <i class="fas fa-gamepad" aria-hidden="true"></i>
+                    <span>Игры</span>
+                </div>
+                <div class="nav-item" id="logoutBtn" role="button" tabindex="0">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
+                    <span>Выход</span>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            <!-- Sidebar -->
+            <aside class="sidebar" role="complementary">
+                <div class="user-card" id="userCard">
+                    <div class="user-avatar" role="img" aria-label="Аватар пользователя">
+                        <div class="avatar-img" id="currentAvatar">👤</div>
+                        <div class="online-indicator" id="onlineIndicator"></div>
+                    </div>
+                    <div class="user-info">
+                        <div class="user-name" id="currentUsername">Гость</div>
+                        <div class="user-status" id="currentStatus">Оффлайн</div>
+                    </div>
+                    <button class="user-menu-btn" aria-label="Настройки профиля">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                </div>
+                
+                <div class="sidebar-menu" role="menu">
+                    <div class="sidebar-item active" data-section="dashboard" role="menuitem" tabindex="0">
+                        <i class="fas fa-chart-network"></i>
+                        <span>Статистика</span>
+                    </div>
+                    <div class="sidebar-item" data-section="messages" role="menuitem" tabindex="0">
+                        <i class="fas fa-envelope"></i>
+                        <span>Сообщения</span>
+                        <span class="badge" id="messageBadge">0</span>
+                    </div>
+                    <div class="sidebar-item" data-section="achievements" role="menuitem" tabindex="0">
+                        <i class="fas fa-trophy"></i>
+                        <span>Достижения</span>
+                    </div>
+                    <div class="sidebar-item" data-section="gallery" role="menuitem" tabindex="0">
+                        <i class="fas fa-images"></i>
+                        <span>Галерея</span>
+                    </div>
+                    <div class="sidebar-item" data-section="settings" role="menuitem" tabindex="0">
+                        <i class="fas fa-cog"></i>
+                        <span>Настройки</span>
+                    </div>
+                </div>
+                
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <button class="quick-action-btn" id="quickChat" aria-label="Быстрый чат">
+                        <i class="fas fa-rocket"></i>
+                    </button>
+                    <button class="quick-action-btn" id="quickGame" aria-label="Быстрая игра">
+                        <i class="fas fa-gamepad"></i>
+                    </button>
+                    <button class="quick-action-btn" id="quickFriends" aria-label="Добавить друга">
+                        <i class="fas fa-user-plus"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content" id="mainContent" role="main">
+                <!-- Dashboard Content -->
+                <div id="dashboardContent" class="page-content active">
+                    <h1 class="section-title">Главная Панель</h1>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Активность</h3>
+                                <div class="stat-value" id="activityValue">87%</div>
+                                <div class="stat-trend up">+5% за неделю</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Друзья</h3>
+                                <div class="stat-value" id="friendCount">0</div>
+                                <div class="stat-subtitle">Онлайн: <span id="onlineFriends">0</span></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Сообщения</h3>
+                                <div class="stat-value" id="messageCount">0</div>
+                                <div class="stat-subtitle">Новые: <span id="newMessages">0</span></div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Достижения</h3>
+                                <div class="stat-value" id="achievementCount">0</div>
+                                <div class="stat-subtitle">Из 15 возможных</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="recent-activity">
+                        <h2 class="section-subtitle">Последняя активность</h2>
+                        <div class="activity-list" id="activityList"></div>
+                    </div>
+                </div>
+
+                <!-- Chat Content -->
+                <div id="chatContent" class="page-content">
+                    <div class="chat-header">
+                        <h1 class="section-title">Космический Чат</h1>
+                        <div class="chat-controls">
+                            <button class="btn btn-secondary" id="clearChat" aria-label="Очистить чат">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-secondary" id="toggleSound" aria-label="Включить звук">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <button class="btn btn-secondary" id="chatSettings" aria-label="Настройки чата">
+                                <i class="fas fa-cog"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-container">
+                        <!-- Online Users Panel -->
+                        <div class="online-users-panel">
+                            <div class="panel-header">
+                                <h3>Онлайн <span class="badge" id="onlineCount">0</span></h3>
+                                <button class="btn-icon" id="refreshOnline">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="user-search">
+                                <input type="text" id="userSearch" placeholder="Поиск пользователей..." 
+                                       class="form-input" aria-label="Поиск пользователей">
+                            </div>
+                            <div class="user-list" id="onlineUsers" role="listbox"></div>
+                        </div>
+
+                        <!-- Chat Messages -->
+                        <div class="chat-messages-panel">
+                            <div class="messages-header">
+                                <div class="channel-info">
+                                    <span class="channel-name">#общий-чат</span>
+                                    <span class="channel-topic">Обсуждение космических открытий</span>
+                                </div>
+                            </div>
+                            <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
+                                <!-- Messages will be loaded here -->
+                            </div>
+                            <div class="chat-input-area">
+                                <div class="input-tools">
+                                    <button class="input-tool" aria-label="Добавить эмодзи">
+                                        <i class="far fa-smile"></i>
+                                    </button>
+                                    <button class="input-tool" aria-label="Прикрепить файл">
+                                        <i class="fas fa-paperclip"></i>
+                                    </button>
+                                    <button class="input-tool" aria-label="Форматирование">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                </div>
+                                <div class="message-input-wrapper">
+                                    <input type="text" class="chat-input-field" id="chatInput" 
+                                           placeholder="Введите сообщение..." 
+                                           aria-label="Поле ввода сообщения"
+                                           maxlength="500">
+                                    <div class="input-actions">
+                                        <button class="btn btn-primary" id="sendMessage" aria-label="Отправить сообщение">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="input-hint" id="charCount">0/500</div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Info Panel -->
+                        <div class="chat-info-panel">
+                            <div class="panel-header">
+                                <h3>Информация о чате</h3>
+                            </div>
+                            <div class="chat-rules">
+                                <h4>Правила сообщества</h4>
+                                <ul role="list">
+                                    <li><i class="fas fa-check-circle"></i> Уважайте других исследователей</li>
+                                    <li><i class="fas fa-check-circle"></i> Делитесь только космическими темами</li>
+                                    <li><i class="fas fa-check-circle"></i> Без спама и рекламы</li>
+                                    <li><i class="fas fa-check-circle"></i> Соблюдайте научный подход</li>
+                                </ul>
+                            </div>
+                            <div class="chat-stats">
+                                <h4>Статистика чата</h4>
+                                <div class="stats-grid-small">
+                                    <div class="stat-small">
+                                        <div class="stat-value-small" id="totalMessages">0</div>
+                                        <div class="stat-label">Сообщений</div>
+                                    </div>
+                                    <div class="stat-small">
+                                        <div class="stat-value-small" id="activeUsers">0</div>
+                                        <div class="stat-label">Активных</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Friends Content -->
+                <div id="friendsContent" class="page-content">
+                    <h1 class="section-title">Друзья</h1>
+                    
+                    <div class="friends-tabs" role="tablist">
+                        <button class="tab-btn active" data-tab="all" role="tab" aria-selected="true">
+                            <i class="fas fa-users"></i> Все друзья
+                            <span class="badge" id="allFriendsCount">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="online" role="tab" aria-selected="false">
+                            <i class="fas fa-circle"></i> Онлайн
+                            <span class="badge" id="onlineFriendsCount">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="requests" role="tab" aria-selected="false">
+                            <i class="fas fa-user-clock"></i> Заявки
+                            <span class="badge" id="requestsCount">0</span>
+                        </button>
+                        <button class="tab-btn" data-tab="suggested" role="tab" aria-selected="false">
+                            <i class="fas fa-user-plus"></i> Предложения
+                        </button>
+                    </div>
+
+                    <div class="friends-toolbar">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="friendSearch" placeholder="Поиск друзей..." 
+                                   class="form-input" aria-label="Поиск друзей">
+                        </div>
+                        <button class="btn btn-primary" id="addFriendBtn">
+                            <i class="fas fa-user-plus"></i> Добавить друга
+                        </button>
+                    </div>
+
+                    <div class="friends-grid" id="friendsGrid" role="grid"></div>
+                    
+                    <!-- Empty State -->
+                    <div class="empty-state" id="emptyFriends" style="display: none;">
+                        <i class="fas fa-users-slash"></i>
+                        <h3>Пока нет друзей</h3>
+                        <p>Начните добавлять друзей, чтобы исследовать космос вместе!</p>
+                        <button class="btn btn-primary" id="findFriendsBtn">Найти друзей</button>
+                    </div>
+                </div>
+
+                <!-- Profile Content -->
+                <div id="profileContent" class="page-content">
+                    <div class="profile-header">
+                        <div class="profile-banner">
+                            <div class="banner-content">
+                                <div class="profile-avatar-large">
+                                    <div class="avatar-large" id="profileAvatarLarge">👤</div>
+                                    <div class="avatar-badge">
+                                        <i class="fas fa-rocket"></i>
+                                    </div>
+                                </div>
+                                <div class="profile-info">
+                                    <h1 class="profile-name" id="profileName">Гость</h1>
+                                    <div class="profile-bio" id="profileBio">Исследователь космического пространства</div>
+                                    <div class="profile-stats">
+                                        <span class="profile-stat">
+                                            <strong id="profileFriends">0</strong> друзей
+                                        </span>
+                                        <span class="profile-stat">
+                                            <strong id="profileMessages">0</strong> сообщений
+                                        </span>
+                                        <span class="profile-stat">
+                                            <strong id="profileAchievements">0</strong> достижений
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="profile-actions">
+                            <button class="btn btn-primary" id="editProfileBtn">
+                                <i class="fas fa-edit"></i> Редактировать профиль
+                            </button>
+                            <button class="btn btn-secondary" id="shareProfileBtn">
+                                <i class="fas fa-share-alt"></i> Поделиться
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="profile-tabs" role="tablist">
+                        <button class="profile-tab active" data-tab="about" role="tab">О себе</button>
+                        <button class="profile-tab" data-tab="achievements" role="tab">Достижения</button>
+                        <button class="profile-tab" data-tab="activity" role="tab">Активность</button>
+                        <button class="profile-tab" data-tab="gallery" role="tab">Галерея</button>
+                    </div>
+
+                    <div class="profile-content">
+                        <!-- About Tab -->
+                        <div class="tab-content active" id="aboutTab">
+                            <div class="about-section">
+                                <h3>Информация</h3>
+                                <div class="info-grid">
+                                    <div class="info-item">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <div>
+                                            <strong>Дата регистрации</strong>
+                                            <p id="joinDate">Неизвестно</p>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-globe"></i>
+                                        <div>
+                                            <strong>Статус</strong>
+                                            <p id="profileStatus">Неактивен</p>
+                                        </div>
+                                    </div>
+                                    <div class="info-item">
+                                        <i class="fas fa-rocket"></i>
+                                        <div>
+                                            <strong>Уровень</strong>
+                                            <p id="profileLevel">Новичок</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Achievements Tab -->
+                        <div class="tab-content" id="achievementsTab">
+                            <div class="achievements-section">
+                                <div class="achievements-grid" id="achievementsGrid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Games Content -->
+                <div id="gamesContent" class="page-content">
+                    <h1 class="section-title">Игровая Зона</h1>
+                    <p class="section-subtitle">Отдыхайте и зарабатывайте космические очки!</p>
+
+                    <div class="games-grid" role="grid">
+                        <!-- Asteroid Game -->
+                        <div class="game-card" data-game="asteroids">
+                            <div class="game-card-header">
+                                <div class="game-icon">
+                                    <i class="fas fa-meteor"></i>
+                                </div>
+                                <div class="game-info">
+                                    <h3>Астероидный дождь</h3>
+                                    <div class="game-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                        <span>4.5</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-card-body">
+                                <p>Уклоняйтесь от астероидов и сбивайте их лазером!</p>
+                                <div class="game-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-trophy"></i>
+                                        <span>Ваш рекорд: <strong id="asteroidHighScore">0</strong></span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-users"></i>
+                                        <span>Играют: <strong id="asteroidPlayers">125</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-card-footer">
+                                <canvas class="game-preview" id="asteroidsPreview" width="300" height="150"></canvas>
+                                <button class="btn btn-primary game-play-btn" onclick="startAsteroids()">
+                                    <i class="fas fa-play"></i> Играть
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quiz Game -->
+                        <div class="game-card" data-game="quiz">
+                            <div class="game-card-header">
+                                <div class="game-icon">
+                                    <i class="fas fa-question-circle"></i>
+                                </div>
+                                <div class="game-info">
+                                    <h3>Космическая викторина</h3>
+                                    <div class="game-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <span>5.0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-card-body">
+                                <p>Проверьте свои знания о космосе!</p>
+                                <div class="game-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-brain"></i>
+                                        <span>Правильно: <strong id="quizCorrect">0%</strong></span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-question"></i>
+                                        <span>Вопросов: <strong>25</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-card-footer">
+                                <div class="quiz-preview" id="quizGame">
+                                    <div class="quiz-question" id="quizQuestion">Готовы к викторине?</div>
+                                    <div class="quiz-answers" id="quizAnswers"></div>
+                                    <button class="btn btn-primary mt-20" onclick="startQuiz()">
+                                        Начать викторину
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- New Game: Space Race -->
+                        <div class="game-card" data-game="race">
+                            <div class="game-card-header">
+                                <div class="game-icon">
+                                    <i class="fas fa-rocket"></i>
+                                </div>
+                                <div class="game-info">
+                                    <h3>Космическая гонка</h3>
+                                    <div class="game-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                        <span>4.0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-card-body">
+                                <p>Соревнуйтесь с другими игроками в космических гонках!</p>
+                                <div class="game-stats">
+                                    <div class="stat">
+                                        <i class="fas fa-flag-checkered"></i>
+                                        <span>Лучшее время: <strong id="raceBestTime">--:--</strong></span>
+                                    </div>
+                                    <div class="stat">
+                                        <i class="fas fa-ranking-star"></i>
+                                        <span>Ваш ранг: <strong id="raceRank">-</strong></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="game-card-footer">
+                                <div class="race-preview">
+                                    <div class="race-track"></div>
+                                    <button class="btn btn-primary game-play-btn" onclick="startSpaceRace()">
+                                        <i class="fas fa-play"></i> Начать гонку
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Leaderboard -->
+                    <div class="leaderboard-section">
+                        <h2 class="section-subtitle">Таблица лидеров</h2>
+                        <div class="leaderboard" id="leaderboard"></div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal" id="authModal" role="dialog" aria-labelledby="authModalTitle" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="authModalTitle" class="text-center">Вход в Космическую Станцию</h2>
+                <button class="close-modal" id="closeAuth" aria-label="Закрыть">&times;</button>
+            </div>
+            <form class="auth-form" id="loginForm" novalidate>
+                <div class="form-group">
+                    <input type="text" id="loginUsername" class="form-input" placeholder=" " required>
+                    <label class="form-label">Имя пользователя</label>
+                    <div class="form-error" id="loginUsernameError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" class="form-input" placeholder=" " required>
+                    <label class="form-label">Пароль</label>
+                    <div class="form-error" id="loginPasswordError"></div>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox">
+                        <input type="checkbox" id="rememberMe">
+                        <span class="checkmark"></span>
+                        Запомнить меня
+                    </label>
+                    <a href="#" class="forgot-password" id="forgotPassword">Забыли пароль?</a>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-sign-in-alt"></i> Войти
+                </button>
+                <div class="social-login">
+                    <p>Или войти через:</p>
+                    <div class="social-buttons">
+                        <button type="button" class="social-btn google" aria-label="Войти через Google">
+                            <i class="fab fa-google"></i>
+                        </button>
+                        <button type="button" class="social-btn github" aria-label="Войти через GitHub">
+                            <i class="fab fa-github"></i>
+                        </button>
+                        <button type="button" class="social-btn twitter" aria-label="Войти через Twitter">
+                            <i class="fab fa-twitter"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+            <div class="form-toggle">
+                Нет аккаунта? <button class="link-btn" id="showRegister">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal hidden" id="registerModal" role="dialog" aria-labelledby="registerModalTitle" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="registerModalTitle" class="text-center">Регистрация на станции</h2>
+                <button class="close-modal" id="closeRegister" aria-label="Закрыть">&times;</button>
+            </div>
+            <form class="auth-form" id="registerForm" novalidate>
+                <div class="form-group">
+                    <input type="text" id="registerUsername" class="form-input" placeholder=" " required minlength="3" maxlength="20">
+                    <label class="form-label">Имя пользователя</label>
+                    <div class="form-hint">От 3 до 20 символов</div>
+                    <div class="form-error" id="registerUsernameError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="registerEmail" class="form-input" placeholder=" " required>
+                    <label class="form-label">Email адрес</label>
+                    <div class="form-error" id="registerEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword" class="form-input" placeholder=" " required minlength="6">
+                    <label class="form-label">Пароль</label>
+                    <div class="form-hint">Не менее 6 символов</div>
+                    <div class="form-error" id="registerPasswordError"></div>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="registerPassword2" class="form-input" placeholder=" " required>
+                    <label class="form-label">Подтверждение пароля</label>
+                    <div class="form-error" id="registerPassword2Error"></div>
+                </div>
+                <div class="form-options">
+                    <label class="checkbox">
+                        <input type="checkbox" id="acceptTerms" required>
+                        <span class="checkmark"></span>
+                        Я принимаю <a href="#" class="link">условия использования</a>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">
+                    <i class="fas fa-user-plus"></i> Зарегистрироваться
+                </button>
+            </form>
+            <div class="form-toggle">
+                Уже есть аккаунт? <button class="link-btn" id="showLogin">Войти</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Editor Modal -->
+    <div class="modal hidden" id="profileModal" role="dialog" aria-labelledby="profileModalTitle" aria-hidden="true">
+        <div class="modal-content wide">
+            <div class="modal-header">
+                <h2 id="profileModalTitle" class="text-center">Редактирование профиля</h2>
+                <button class="close-modal" id="closeProfile" aria-label="Закрыть">&times;</button>
+            </div>
+            <div class="profile-editor-modal">
+                <div class="editor-sidebar">
+                    <nav class="editor-nav" role="navigation">
+                        <button class="editor-nav-btn active" data-section="avatar">Аватар</button>
+                        <button class="editor-nav-btn" data-section="info">Информация</button>
+                        <button class="editor-nav-btn" data-section="theme">Тема</button>
+                        <button class="editor-nav-btn" data-section="privacy">Приватность</button>
+                    </nav>
+                </div>
+                <div class="editor-content">
+                    <div class="editor-section active" id="avatarSection">
+                        <h3>Выбор аватара</h3>
+                        <div class="avatar-grid">
+                            <div class="avatar-option active" data-avatar="👨‍🚀">
+                                <div class="avatar-preview">👨‍🚀</div>
+                                <span>Астронавт</span>
+                            </div>
+                            <div class="avatar-option" data-avatar="🪐">
+                                <div class="avatar-preview">🪐</div>
+                                <span>Планета</span>
+                            </div>
+                            <div class="avatar-option" data-avatar="⭐">
+                                <div class="avatar-preview">⭐</div>
+                                <span>Звезда</span>
+                            </div>
+                            <div class="avatar-option" data-avatar="🚀">
+                                <div class="avatar-preview">🚀</div>
+                                <span>Ракета</span>
+                            </div>
+                            <div class="avatar-option" data-avatar="🌌">
+                                <div class="avatar-preview">🌌</div>
+                                <span>Туманность</span>
+                            </div>
+                            <div class="avatar-option" data-avatar="🛸">
+                                <div class="avatar-preview">🛸</div>
+                                <span>НЛО</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-section" id="infoSection">
+                        <h3>Личная информация</h3>
+                        <div class="form-group">
+                            <input type="text" id="editUsername" class="form-input" placeholder=" ">
+                            <label class="form-label">Имя пользователя</label>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="editBio" class="form-input" placeholder=" " rows="4" maxlength="200"></textarea>
+                            <label class="form-label">О себе</label>
+                            <div class="char-counter" id="bioCounter">0/200</div>
+                        </div>
+                    </div>
+                    
+                    <div class="editor-section" id="themeSection">
+                        <h3>Цветовая тема</h3>
+                        <div class="theme-grid">
+                            <div class="theme-option active" data-theme="default">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0a0a2a, #1a1a3a);"></div>
+                                <span>Космическая Синева</span>
+                            </div>
+                            <div class="theme-option" data-theme="purple">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #2a0a4a, #4a1a6a);"></div>
+                                <span>Фиолетовая Галактика</span>
+                            </div>
+                            <div class="theme-option" data-theme="green">
+                                <div class="theme-preview" style="background: linear-gradient(135deg, #0a2a1a, #1a3a2a);"></div>
+                                <span>Неоновый Грин</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelProfile">Отмена</button>
+                <button class="btn btn-primary" id="saveProfile">Сохранить изменения</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="notificationSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-space-coin-win-notification-271.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="messageSound" preload="auto">
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-retro-game-emergency-notification-230.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(console.error);
+        }
+    </script>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
